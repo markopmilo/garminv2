@@ -323,7 +323,7 @@ function App() {
               {/* Start date inline */}
               <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                 <label style={{ margin: 0, whiteSpace: "nowrap" }}>
-                  Start date for Data (M/D/YYYY)
+                  Start date for Data (MM/DD/YYYY)
                 </label>
                 <input
                     style={{ flex: 1 }}
