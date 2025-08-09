@@ -30,7 +30,6 @@ const normSteps = (rows) =>
       };
     }));
 
-
 const normStress = (rows) =>
     sortAsc((rows || []).map((r) => ({
       date: toDay(r?.date),
@@ -65,7 +64,6 @@ const normExercise = (rows) =>
       };
     }));
 
-
 const normSleep = (rows) =>
     sortAsc((rows || []).map((r) => ({
       date: toDay(r?.date),
@@ -79,8 +77,8 @@ const normSleep = (rows) =>
 /* ------------------------------ main component ------------------------------ */
 
 function App() {
-  // Phase: 'checking' | 'setup' | 'updating' | 'ready'
-  const [phase, setPhase] = useState("checking");
+  // Phase: 'setup' | 'updating' | 'ready'
+  const [phase, setPhase] = useState("setup");
 
   // Data
   const [steps, setSteps] = useState([]);
@@ -100,7 +98,7 @@ function App() {
   const [customEnd, setCustomEnd] = useState("");
   const [useCustomRange, setUseCustomRange] = useState(false);
 
-  // Bootstrap (decide phase based on /api/steps)
+  // Bootstrap (prefill config and, if data exists, jump to dashboard)
   useEffect(() => {
     (async () => {
       try {
@@ -118,11 +116,9 @@ function App() {
         if (Array.isArray(st) && st.length > 0) {
           await fetchAll();
           setPhase("ready");
-        } else {
-          setPhase("setup");
-        }
+        } // else: remain on setup by default
       } catch {
-        setPhase("setup");
+        // stay on setup if anything fails
       }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -230,8 +226,6 @@ function App() {
     }
   };
 
-
-
   const deleteData = async () => {
     if (!window.confirm("Are you sure you want to delete ALL HealthData contents?")) return;
     setLoading(true);
@@ -257,7 +251,6 @@ function App() {
     if (!d) return false;
     if (s && d < s) return false;
     return !(e && d > e);
-
   };
 
   const filterByDays = useCallback((arr) => {
@@ -285,11 +278,11 @@ function App() {
 
   /* --------------------------------- render --------------------------------- */
 
-  if (phase === "checking" || phase === "updating") {
+  if (phase === "updating") {
     return (
         <div className="app center">
           <div className="card" style={{ maxWidth: 520 }}>
-            <h2>{phase === "checking" ? "Checking setup…" : "Fetching your Garmin data…"}</h2>
+            <h2>Fetching your Garmin data…</h2>
             <p>Please wait. This can take a few minutes on the first run.</p>
             <div className="spinner" />
           </div>
@@ -303,39 +296,74 @@ function App() {
           <div className="card" style={{ maxWidth: 520 }}>
             <h2>Welcome — let’s set things up</h2>
             <div className="form">
+              {/* Username full-width */}
               <label>
                 Garmin username/email
-                <input value={cfgUser} onChange={(e) => setCfgUser(e.target.value)} placeholder="you@example.com" />
+                <input
+                    value={cfgUser}
+                    onChange={(e) => setCfgUser(e.target.value)}
+                    placeholder="you@example.com"
+                />
               </label>
-              <label>
-                Garmin password
-                <input value={cfgPass} onChange={(e) => setCfgPass(e.target.value)} placeholder="••••••••" type="password" />
-              </label>
-              <label>
-                Start date for Data (M/D/YYYY)
-                <input value={cfgStart} onChange={(e) => setCfgStart(e.target.value)} placeholder="6/1/2025" />
-              </label>
+
+              {/* Password inline */}
+              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                <label style={{ margin: 0, whiteSpace: "nowrap" }}>
+                  Garmin password
+                </label>
+                <input
+                    style={{ flex: 1 }}
+                    value={cfgPass}
+                    onChange={(e) => setCfgPass(e.target.value)}
+                    placeholder="••••••••"
+                    type="password"
+                />
+              </div>
+
+              {/* Start date inline */}
+              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                <label style={{ margin: 0, whiteSpace: "nowrap" }}>
+                  Start date for Data (M/D/YYYY)
+                </label>
+                <input
+                    style={{ flex: 1 }}
+                    value={cfgStart}
+                    onChange={(e) => setCfgStart(e.target.value)}
+                    placeholder="6/1/2025"
+                />
+              </div>
             </div>
 
-            <div className="toolbar" style={{ justifyContent: "flex-end", marginTop: 12 }}>
-              <button className="btn" onClick={() => window.location.reload()}>Cancel</button>
+            <div
+                className="toolbar"
+                style={{ justifyContent: "flex-end", marginTop: 12 }}
+            >
+              <button className="btn" onClick={() => window.location.reload()}>
+                Cancel
+              </button>
               <button
                   className="btn primary"
                   onClick={runInitialUpdate}
                   disabled={!cfgUser?.trim()}
-                  title={!cfgUser?.trim() ? "Username is required" : "Save & fetch data"}
+                  title={
+                    !cfgUser?.trim()
+                        ? "Username is required"
+                        : "Save & fetch data"
+                  }
               >
                 Save & Pull Data
               </button>
             </div>
 
             <p className="muted" style={{ marginTop: 8 }}>
-              We’ll save your config, run one full update, then take you to the dashboard.
+              We’ll save your config, run one full update, then take you to the
+              dashboard.
             </p>
           </div>
         </div>
     );
   }
+
 
   return (
       <div className="app">
@@ -422,7 +450,6 @@ function App() {
             </div>
           </section>
 
-
           {/* Stress */}
           <section className="card">
             <h2>Stress (Daily Avg)</h2>
@@ -483,7 +510,6 @@ function App() {
                       strokeWidth={2}
                       stroke="#10b981" // green
                   />
-
                 </LineChart>
               </ResponsiveContainer>
             </div>
@@ -514,7 +540,6 @@ function App() {
               </ResponsiveContainer>
             </div>
           </section>
-
 
           {/* Sleep */}
           <section className="card">
@@ -571,7 +596,6 @@ function App() {
                       strokeWidth={2}
                       stroke="#6b7280" // gray
                   />
-
                 </LineChart>
               </ResponsiveContainer>
             </div>
