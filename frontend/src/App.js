@@ -227,7 +227,7 @@ function App() {
   };
 
   const deleteData = async () => {
-    if (!window.confirm("Are you sure you want to delete ALL HealthData contents?")) return;
+    if (!window.confirm("Are you sure you want to delete ALL locally stored HealthData contents?")) return;
     setLoading(true);
     try {
       await axios.delete(`${API}/api/erase?confirm=true`);
@@ -400,8 +400,8 @@ function App() {
             <button className="btn primary" onClick={updateData} disabled={loading}>
               {loading ? "Updating…" : "Update from Garmin"}
             </button>
-            <button className="btn danger" onClick={deleteData} disabled={loading}>Erase HealthData</button>
             <button className="btn" onClick={openSettings} disabled={loading}>Settings</button>
+            <button className="btn danger" onClick={deleteData} disabled={loading}>Erase HealthData and Log out</button>
           </div>
         </div>
 
