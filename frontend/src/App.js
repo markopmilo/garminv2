@@ -195,7 +195,7 @@ function App() {
           "";
 
       const unifiedStart = window.prompt(
-          "Start date for data (M/D/YYYY):",
+          "Start date for data (MM/DD/YYYY):",
           currentStart
       );
       if (unifiedStart == null) return;
